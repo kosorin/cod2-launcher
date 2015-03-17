@@ -1,9 +1,13 @@
-﻿using System;
+﻿using Microsoft.Win32;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
+using System.Net;
+using System.Net.Sockets;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
@@ -15,7 +19,6 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace CoD2_Launcher
 {
@@ -48,6 +51,13 @@ namespace CoD2_Launcher
         }
         #endregion // end of INotifyPropertyChanged
 
+        private Game _currentGame = null;
+        public Game CurrentGame
+        {
+            get { return _currentGame; }
+            set { SetProperty(ref _currentGame, value); }
+        }
+
         public string CurrentServer
         {
             get { return ServerComboBox.Text; }
@@ -72,10 +82,12 @@ namespace CoD2_Launcher
             {
                 ServerList.Add(server);
             }
-            CurrentServer = "kafemlynek.cz";
+            CurrentServer = Properties.Settings.Default.DefaultServer;
 
             _outputter = new TextBoxOutputter(ConsoleTextBox);
             Console.SetOut(_outputter);
+            Console.WriteLine(Title);
+            Console.WriteLine("-------------------------------------------------");
         }
 
         private void Play_Click(object sender, RoutedEventArgs e)
@@ -96,15 +108,13 @@ namespace CoD2_Launcher
 
         private void Play(string server)
         {
-            AddServer(server);
-
             try
             {
-                Console.Write("Spouštím hru ({0})... ", server);
+                Console.Write("Spouštím hru na serveru {0}... ", server);
                 ProcessStartInfo p = new ProcessStartInfo
                 {
-                    WorkingDirectory = @"D:\Call of Duty 2\",
-                    FileName = "CoD2MP_s.exe",
+                    WorkingDirectory = Path.GetDirectoryName(Properties.Settings.Default.GameExe),
+                    FileName = Path.GetFileName(Properties.Settings.Default.GameExe),
                     Arguments = "connect " + server
                 };
                 //Process.Start(p);
@@ -120,7 +130,7 @@ namespace CoD2_Launcher
         {
             Console.WriteLine("Zabíjím všechny programy... ");
             bool ok = true;
-            ok &= Kill("CoD2MP_s");
+            ok &= Kill(Path.GetFileNameWithoutExtension(Properties.Settings.Default.GameExe));
             ok &= Kill("PnkBstrA");
             ok &= Kill("PnkBstrB");
             Console.WriteLine(ok ? "OK" : "FAIL");
@@ -172,6 +182,13 @@ namespace CoD2_Launcher
             RemoveServer(CurrentServer);
         }
 
+        private void DefaultServer_Click(object sender, RoutedEventArgs e)
+        {
+            Properties.Settings.Default.DefaultServer = CurrentServer;
+            Properties.Settings.Default.Save();
+            Console.WriteLine("Nastaven výchozí server: {0}", CurrentServer);
+        }
+
         private void AddServer(string server)
         {
             if (!Properties.Settings.Default.ServerList.Contains(server))
@@ -184,6 +201,8 @@ namespace CoD2_Launcher
             {
                 ServerList.Add(server);
             }
+
+            Console.WriteLine("Přidán oblíbený server: {0}", server);
         }
 
         private void RemoveServer(string server)
@@ -198,6 +217,59 @@ namespace CoD2_Launcher
             {
                 ServerList.Remove(server);
             }
+
+            Console.WriteLine("Odebrán oblíbený server: {0}", server);
+        }
+
+        private string ShowFileDialog(string path)
+        {
+            try
+            {
+                OpenFileDialog dialog = new OpenFileDialog();
+                dialog.Multiselect = false;
+                if (path != null)
+                {
+                    dialog.FileName = Path.GetFileName(path);
+                    dialog.InitialDirectory = Path.GetDirectoryName(path);
+                }
+                dialog.CheckFileExists = true;
+                dialog.Filter = "Program|*.exe";
+
+                Nullable<bool> result = dialog.ShowDialog();
+                if (result == true)
+                {
+                    return dialog.FileName;
+                }
+            }
+            catch { }
+            return null;
+        }
+
+        private void ChangeGameDir_Click(object sender, RoutedEventArgs e)
+        {
+            string path = ShowFileDialog(Properties.Settings.Default.GameExe);
+            if (path != null)
+            {
+                Properties.Settings.Default.GameExe = path;
+                Properties.Settings.Default.Save();
+
+                Console.WriteLine("Nové umístění hry: {0}", path);
+            }
+        }
+
+        private void ServerComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            RefreshStatus();
+        }
+
+        private void RefreshStatus_Click(object sender, RoutedEventArgs e)
+        {
+            RefreshStatus();
+        }
+
+        private void RefreshStatus()
+        {
+            CurrentGame = Game.GetStatus(ServerInfo.Parse(CurrentServer));
         }
     }
 }

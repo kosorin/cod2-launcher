@@ -8,5 +8,11 @@
   &lt;string&gt;kafemlynek.cz&lt;/string&gt;
 &lt;/ArrayOfString&gt;</Value>
     </Setting>
+    <Setting Name="GameExe" Type="System.String" Scope="User">
+      <Value Profile="(Default)">C:\CoD2MP_s.exe</Value>
+    </Setting>
+    <Setting Name="DefaultServer" Type="System.String" Scope="User">
+      <Value Profile="(Default)">kafemlynek.cz</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

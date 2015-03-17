@@ -36,5 +36,29 @@ namespace CoD2_Launcher.Properties {
                 this["ServerList"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("C:\\CoD2MP_s.exe")]
+        public string GameExe {
+            get {
+                return ((string)(this["GameExe"]));
+            }
+            set {
+                this["GameExe"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("kafemlynek.cz")]
+        public string DefaultServer {
+            get {
+                return ((string)(this["DefaultServer"]));
+            }
+            set {
+                this["DefaultServer"] = value;
+            }
+        }
     }
 }

@@ -1,6 +1,7 @@
-﻿<Window x:Class="CoD2_Launcher.MainWindow"
-        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+﻿<Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:System="clr-namespace:System;assembly=mscorlib"
+        x:Class="CoD2_Launcher.MainWindow"
         Title="Call of Duty 2: Spouštěč"
         ResizeMode="NoResize"
         Width="640"
@@ -10,14 +11,14 @@
 
     <Window.Resources>
         <Style x:Key="BigButtonStyle"
-               TargetType="Button">
+               TargetType="{x:Type Button}">
             <Setter Property="Padding"
                     Value="20,10" />
             <Setter Property="FontSize"
                     Value="24" />
         </Style>
         <Style x:Key="ServerButtonStyle"
-               TargetType="Button">
+               TargetType="{x:Type Button}">
             <Setter Property="Padding"
                     Value="8,2" />
             <Setter Property="Margin"
@@ -36,54 +37,132 @@
             <Border.Background>
                 <LinearGradientBrush EndPoint="0.5,1"
                                      StartPoint="0.5,0">
-                    <GradientStop Color="#0000"
+                    <GradientStop Color="#cc000000"
                                   Offset="0" />
-                    <GradientStop Color="Maroon"
+                    <GradientStop Color="#cc660000"
                                   Offset="1" />
                 </LinearGradientBrush>
             </Border.Background>
         </Border>
 
-        <StackPanel VerticalAlignment="Bottom"
-                    HorizontalAlignment="Center"
-                    Margin="0,0,0,60">
-            <StackPanel Orientation="Horizontal">
-                <Button Content="Hrát"
-                        Style="{StaticResource BigButtonStyle}"
-                        Click="Play_Click" />
-                <Button Content="Zabít &amp; Hrát"
-                        Style="{StaticResource BigButtonStyle}"
-                        Margin="5,0,0,0"
-                        Click="KillPlay_Click" />
-                <Button Content="Zabít"
-                        Style="{StaticResource BigButtonStyle}"
-                        Margin="5,0,0,0"
-                        Click="Kill_Click" />
-            </StackPanel>
+        <Grid Width="380"
+              Height="360">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
 
-            <Grid VerticalAlignment="Bottom"
-                  Margin="0,5,0,0">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition />
-                    <ColumnDefinition Width="Auto" />
-                    <ColumnDefinition Width="Auto" />
-                </Grid.ColumnDefinitions>
+            <TextBlock Text="{Binding CurrentGame.Map}"
+                       FontSize="24"
+                       Foreground="White"
+                       FontWeight="Normal" />
+            <TextBlock Text="{Binding CurrentGame.Type}"
+                       FontSize="16"
+                       Opacity="0.5"
+                       Foreground="White"
+                       FontWeight="SemiBold"
+                       Grid.Row="1" />
+
+            <TextBlock Text="{Binding CurrentGame.PlayersCountString, Mode=OneWay}"
+                       FontSize="12"
+                       Opacity="0.8"
+                       Foreground="White"
+                       FontWeight="SemiBold"
+                       Grid.Row="1"
+                       HorizontalAlignment="Right"
+                       VerticalAlignment="Bottom" />
+
+            <ScrollViewer Margin="0,5,0,20"
+                          Grid.Row="3"
+                          VerticalScrollBarVisibility="Auto">
+                <ItemsControl Background="{x:Null}"
+                              ItemsSource="{Binding CurrentGame.Players}"
+                              BorderThickness="0">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Border Background="#29ffffff"
+                                    Padding="4"
+                                    Margin="0,0,0,1">
+                                <Grid Opacity="0.8"
+                                      TextBlock.FontSize="12"
+                                      TextBlock.FontWeight="Normal"
+                                      TextBlock.Foreground="White">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="48" />
+                                        <ColumnDefinition Width="48" />
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Text="{Binding Name}"
+                                               Margin="5,0,0,0" />
+                                    <TextBlock Grid.Column="1"
+                                               Text="{Binding Score}"
+                                               HorizontalAlignment="Right" />
+                                    <TextBlock Grid.Column="2"
+                                               Text="{Binding Ping}"
+                                               HorizontalAlignment="Right"
+                                               Margin="0,0,5,0" />
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </ScrollViewer>
+
+            <StackPanel Grid.Row="4">
+                <StackPanel Orientation="Horizontal">
+                    <Button Content="Hrát"
+                            Style="{StaticResource BigButtonStyle}"
+                            Click="Play_Click" />
+                    <Button Content="Zabít &amp; Hrát"
+                            Style="{StaticResource BigButtonStyle}"
+                            Margin="5,0,0,0"
+                            Click="KillPlay_Click" />
+                    <Button Content="Zabít"
+                            Style="{StaticResource BigButtonStyle}"
+                            Margin="5,0,0,0"
+                            Click="Kill_Click" />
+                </StackPanel>
+
                 <ComboBox x:Name="ServerComboBox"
                           SelectedItem="{Binding CurrentServer}"
                           ItemsSource="{Binding ServerList}"
                           FontFamily="Consolas"
                           FontSize="16"
-                          IsEditable="True" />
-                <Button Grid.Column="1"
-                        Content="Přidat"
-                        Style="{StaticResource ServerButtonStyle}"
-                        Click="AddServer_Click" />
-                <Button Grid.Column="2"
-                        Content="Odebrat"
-                        Style="{StaticResource ServerButtonStyle}"
-                        Click="RemoveServer_Click" />
-            </Grid>
-        </StackPanel>
+                          IsEditable="True"
+                          SelectionChanged="ServerComboBox_SelectionChanged"
+                          Margin="0,5,0,0" />
+
+                <Grid Margin="0,5,0,0">
+                    <StackPanel Orientation="Horizontal">
+                        <Button Grid.Column="1"
+                                Content="Přidat"
+                                Style="{StaticResource ServerButtonStyle}"
+                                Click="AddServer_Click"
+                                Margin="0" />
+                        <Button Grid.Column="2"
+                                Content="Odebrat"
+                                Style="{StaticResource ServerButtonStyle}"
+                                Click="RemoveServer_Click" />
+                        <Button Grid.Column="3"
+                                Content="Výchozí"
+                                Style="{StaticResource ServerButtonStyle}"
+                                Click="DefaultServer_Click" />
+                    </StackPanel>
+
+                    <Button Content="Obnovit"
+                            Style="{StaticResource ServerButtonStyle}"
+                            Click="RefreshStatus_Click"
+                            HorizontalAlignment="Right" />
+                </Grid>
+            </StackPanel>
+        </Grid>
+
+        <TextBlock HorizontalAlignment="Right"
+                   VerticalAlignment="Bottom"
+                   Margin="5"><Hyperlink Click="ChangeGameDir_Click"><Run Text="Změnit umístění hry" /></Hyperlink></TextBlock>
 
         <TextBox x:Name="ConsoleTextBox"
                  Grid.Row="1"
