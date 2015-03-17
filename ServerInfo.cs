@@ -59,5 +59,19 @@ namespace CoD2_Launcher
 
             return info;
         }
+
+        public override string ToString()
+        {
+            string format;
+            if (!string.IsNullOrWhiteSpace(Name))
+            {
+                format = "{0} ({1}:{2})";
+            }
+            else
+            {
+                format = "{1}:{2}";
+            }
+            return string.Format(format, Name, Host, Port);
+        }
     }
 }

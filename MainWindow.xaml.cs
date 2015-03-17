@@ -10,6 +10,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.Runtime.CompilerServices;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -73,6 +74,8 @@ namespace CoD2_Launcher
 
         TextBoxOutputter _outputter;
 
+        Timer _timer = null;
+
         public MainWindow()
         {
             InitializeComponent();
@@ -91,11 +94,6 @@ namespace CoD2_Launcher
         }
 
         private void Play_Click(object sender, RoutedEventArgs e)
-        {
-            Play(CurrentServer);
-        }
-
-        private void KillPlay_Click(object sender, RoutedEventArgs e)
         {
             KillAll();
             Play(CurrentServer);
@@ -117,7 +115,7 @@ namespace CoD2_Launcher
                     FileName = Path.GetFileName(Properties.Settings.Default.GameExe),
                     Arguments = "connect " + server
                 };
-                //Process.Start(p);
+                Process.Start(p);
                 Console.WriteLine("OK");
             }
             catch (Exception e)
@@ -129,11 +127,9 @@ namespace CoD2_Launcher
         private void KillAll()
         {
             Console.WriteLine("Zabíjím všechny programy... ");
-            bool ok = true;
-            ok &= Kill(Path.GetFileNameWithoutExtension(Properties.Settings.Default.GameExe));
-            ok &= Kill("PnkBstrA");
-            ok &= Kill("PnkBstrB");
-            Console.WriteLine(ok ? "OK" : "FAIL");
+            Kill(Path.GetFileNameWithoutExtension(Properties.Settings.Default.GameExe));
+            Kill("PnkBstrA");
+            Kill("PnkBstrB");
         }
 
         private bool Kill(string name)
@@ -269,7 +265,23 @@ namespace CoD2_Launcher
 
         private void RefreshStatus()
         {
-            CurrentGame = Game.GetStatus(ServerInfo.Parse(CurrentServer));
+            if (_timer != null)
+            {
+                _timer.Dispose();
+                _timer = null;
+            }
+
+            if (_timer == null)
+            {
+                const int minute = 1000 * 60;
+                _timer = new Timer(o =>
+                {
+                    Dispatcher.BeginInvoke((Action)(() =>
+                    {
+                        CurrentGame = Game.GetStatus(ServerInfo.Parse(CurrentServer));
+                    }));
+                }, null, 0, minute);
+            }
         }
     }
 }

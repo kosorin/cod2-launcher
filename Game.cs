@@ -53,7 +53,7 @@ namespace CoD2_Launcher
                 return null;
             }
 
-            Console.Write("Získávám informace o serveru... ");
+            Console.Write("Získávám informace ze serveru {0} ... ", server);
 
             try
             {

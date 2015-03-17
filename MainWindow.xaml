@@ -10,19 +10,9 @@
         WindowStartupLocation="CenterScreen">
 
     <Window.Resources>
-        <Style x:Key="BigButtonStyle"
-               TargetType="{x:Type Button}">
-            <Setter Property="Padding"
-                    Value="20,10" />
-            <Setter Property="FontSize"
-                    Value="24" />
-        </Style>
-        <Style x:Key="ServerButtonStyle"
-               TargetType="{x:Type Button}">
+        <Style TargetType="{x:Type Button}">
             <Setter Property="Padding"
                     Value="8,2" />
-            <Setter Property="Margin"
-                    Value="5,0,0,0" />
         </Style>
     </Window.Resources>
 
@@ -46,7 +36,7 @@
         </Border>
 
         <Grid Width="380"
-              Height="360">
+              Height="410">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
@@ -67,15 +57,14 @@
                        Grid.Row="1" />
 
             <TextBlock Text="{Binding CurrentGame.PlayersCountString, Mode=OneWay}"
-                       FontSize="12"
+                       FontSize="16"
                        Opacity="0.8"
                        Foreground="White"
-                       FontWeight="SemiBold"
                        Grid.Row="1"
                        HorizontalAlignment="Right"
                        VerticalAlignment="Bottom" />
 
-            <ScrollViewer Margin="0,5,0,20"
+            <ScrollViewer Margin="0,5,0,0"
                           Grid.Row="3"
                           VerticalScrollBarVisibility="Auto">
                 <ItemsControl Background="{x:Null}"
@@ -111,21 +100,8 @@
                 </ItemsControl>
             </ScrollViewer>
 
-            <StackPanel Grid.Row="4">
-                <StackPanel Orientation="Horizontal">
-                    <Button Content="Hrát"
-                            Style="{StaticResource BigButtonStyle}"
-                            Click="Play_Click" />
-                    <Button Content="Zabít &amp; Hrát"
-                            Style="{StaticResource BigButtonStyle}"
-                            Margin="5,0,0,0"
-                            Click="KillPlay_Click" />
-                    <Button Content="Zabít"
-                            Style="{StaticResource BigButtonStyle}"
-                            Margin="5,0,0,0"
-                            Click="Kill_Click" />
-                </StackPanel>
-
+            <StackPanel Margin="0,5,0,0"
+                        Grid.Row="4">
                 <ComboBox x:Name="ServerComboBox"
                           SelectedItem="{Binding CurrentServer}"
                           ItemsSource="{Binding ServerList}"
@@ -139,23 +115,37 @@
                     <StackPanel Orientation="Horizontal">
                         <Button Grid.Column="1"
                                 Content="Přidat"
-                                Style="{StaticResource ServerButtonStyle}"
                                 Click="AddServer_Click"
                                 Margin="0" />
                         <Button Grid.Column="2"
                                 Content="Odebrat"
-                                Style="{StaticResource ServerButtonStyle}"
-                                Click="RemoveServer_Click" />
+                                Click="RemoveServer_Click"
+                                Margin="5,0,0,0" />
                         <Button Grid.Column="3"
                                 Content="Výchozí"
-                                Style="{StaticResource ServerButtonStyle}"
-                                Click="DefaultServer_Click" />
+                                Click="DefaultServer_Click"
+                                Margin="5,0,0,0" />
                     </StackPanel>
 
                     <Button Content="Obnovit"
-                            Style="{StaticResource ServerButtonStyle}"
                             Click="RefreshStatus_Click"
                             HorizontalAlignment="Right" />
+                </Grid>
+
+                <Grid Margin="0,20,0,0">
+                    <Grid.RowDefinitions>
+                        <RowDefinition />
+                        <RowDefinition Height="5" />
+                        <RowDefinition />
+                    </Grid.RowDefinitions>
+                    <Button Content="Hrát"
+                            Padding="20,10"
+                            FontSize="24"
+                            Click="Play_Click" />
+                    <Button Content="Zabít"
+                            FontSize="12"
+                            Click="Kill_Click"
+                            Grid.Row="2" />
                 </Grid>
             </StackPanel>
         </Grid>
