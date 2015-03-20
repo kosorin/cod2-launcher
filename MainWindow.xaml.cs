@@ -65,6 +65,15 @@ namespace CoD2_Launcher
             set { ServerComboBox.Text = value; }
         }
 
+        private ServerInfo _lastServer = null;
+
+        private ObservableCollection<LastMap> _lastMaps = new ObservableCollection<LastMap>();
+        public ObservableCollection<LastMap> LastMaps
+        {
+            get { return _lastMaps; }
+            set { SetProperty(ref _lastMaps, value); }
+        }
+
         private ObservableCollection<string> _serverList = new ObservableCollection<string>();
         public ObservableCollection<string> ServerList
         {
@@ -263,6 +272,8 @@ namespace CoD2_Launcher
             RefreshStatus();
         }
 
+        private const int _refreshInterval = 2 * 60;
+
         private void RefreshStatus()
         {
             if (_timer != null)
@@ -273,12 +284,32 @@ namespace CoD2_Launcher
 
             if (_timer == null)
             {
-                const int minute = 1000 * 60;
+                const int minute = 1000 * _refreshInterval;
                 _timer = new Timer(o =>
                 {
                     Dispatcher.BeginInvoke((Action)(() =>
                     {
-                        CurrentGame = Game.GetStatus(ServerInfo.Parse(CurrentServer));
+                        ServerInfo si = ServerInfo.Parse(CurrentServer);
+                        if (_lastServer != si)
+                        {
+                            _lastServer = si;
+                            LastMaps.Clear();
+                        }
+
+                        CurrentGame = Game.GetStatus(si);
+                        if (CurrentGame != null)
+                        {
+                            if (LastMaps.Count == 0 || (LastMaps.Last().Map != CurrentGame.Map && LastMaps.Last().Type != CurrentGame.Type))
+                            {
+                                LastMaps.Insert(0, new LastMap
+                                {
+                                    DateTime = DateTime.Now,
+                                    Map = CurrentGame.Map,
+                                    Type = CurrentGame.Type
+                                });
+                                LastMapsComboBox.SelectedIndex = 0;
+                            }
+                        }
                     }));
                 }, null, 0, minute);
             }

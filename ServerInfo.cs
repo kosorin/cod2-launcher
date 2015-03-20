@@ -73,5 +73,19 @@ namespace CoD2_Launcher
             }
             return string.Format(format, Name, Host, Port);
         }
+
+        public override bool Equals(object obj)
+        {
+            if (obj is ServerInfo)
+            {
+                ServerInfo o = obj as ServerInfo;
+                if (o != null)
+                {
+                    return Host == o.Host && Port == o.Port;
+                }
+                return false;
+            }
+            return false;
+        }
     }
 }

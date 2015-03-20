@@ -4,8 +4,8 @@
         x:Class="CoD2_Launcher.MainWindow"
         Title="Call of Duty 2: Spouštěč"
         ResizeMode="NoResize"
-        Width="640"
-        SizeToContent="Height"
+        Width="800"
+        Height="700"
         KeyDown="Window_KeyDown"
         WindowStartupLocation="CenterScreen">
 
@@ -19,10 +19,12 @@
     <Grid Background="Black">
         <Grid.RowDefinitions>
             <RowDefinition />
-            <RowDefinition Height="220" />
+            <RowDefinition Height="150" />
         </Grid.RowDefinitions>
 
-        <Image Source="cod.png" />
+        <Image Source="Background.jpg"
+               Width="800"
+               Height="600" />
         <Border>
             <Border.Background>
                 <LinearGradientBrush EndPoint="0.5,1"
@@ -36,7 +38,7 @@
         </Border>
 
         <Grid Width="380"
-              Height="410">
+              Height="480">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
@@ -100,8 +102,31 @@
                 </ItemsControl>
             </ScrollViewer>
 
-            <StackPanel Margin="0,5,0,0"
-                        Grid.Row="4">
+            <StackPanel Grid.Row="4">
+                <ComboBox x:Name="LastMapsComboBox"
+                          ItemsSource="{Binding LastMaps}"
+                          Margin="0,5,0,10"
+                          Text="Poslední mapy:"
+                          HorizontalContentAlignment="Stretch">
+                    <ComboBox.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel>
+                                <Grid>
+                                    <TextBlock Text="{Binding Map}"
+                                               FontWeight="Bold" />
+                                    <TextBlock Text="{Binding DateTime, StringFormat='HH:mm'}"
+                                               FontSize="10.667"
+                                               HorizontalAlignment="Right"
+                                               FontWeight="Bold"
+                                               Opacity="0.5" />
+                                </Grid>
+                                <TextBlock Text="{Binding Type}"
+                                           Opacity="0.5" />
+                            </StackPanel>
+                        </DataTemplate>
+                    </ComboBox.ItemTemplate>
+                </ComboBox>
+
                 <ComboBox x:Name="ServerComboBox"
                           SelectedItem="{Binding CurrentServer}"
                           ItemsSource="{Binding ServerList}"
@@ -110,6 +135,7 @@
                           IsEditable="True"
                           SelectionChanged="ServerComboBox_SelectionChanged"
                           Margin="0,5,0,0" />
+
 
                 <Grid Margin="0,5,0,0">
                     <StackPanel Orientation="Horizontal">

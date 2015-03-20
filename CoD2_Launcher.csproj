@@ -57,6 +57,7 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Game.cs" />
+    <Compile Include="LastMap.cs" />
     <Compile Include="Player.cs" />
     <Compile Include="ServerInfo.cs" />
     <Compile Include="TextBoxOutputter.cs" />
@@ -101,10 +102,10 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="cod.png" />
+    <Resource Include="cod2.ico" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="cod2.ico" />
+    <Resource Include="Background.jpg" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
