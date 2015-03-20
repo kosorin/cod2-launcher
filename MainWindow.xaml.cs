@@ -290,7 +290,7 @@ namespace CoD2_Launcher
                     Dispatcher.BeginInvoke((Action)(() =>
                     {
                         ServerInfo si = ServerInfo.Parse(CurrentServer);
-                        if (_lastServer != si)
+                        if (_lastServer != null && !_lastServer.Equals(si))
                         {
                             _lastServer = si;
                             LastMaps.Clear();
