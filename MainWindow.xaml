@@ -108,23 +108,36 @@
                           Margin="0,5,0,10"
                           Text="Poslední mapy:"
                           HorizontalContentAlignment="Stretch">
-                    <ComboBox.ItemTemplate>
-                        <DataTemplate>
-                            <StackPanel>
-                                <Grid>
-                                    <TextBlock Text="{Binding Map}"
-                                               FontWeight="Bold" />
-                                    <TextBlock Text="{Binding DateTime, StringFormat='HH:mm'}"
-                                               FontSize="10.667"
-                                               HorizontalAlignment="Right"
-                                               FontWeight="Bold"
-                                               Opacity="0.5" />
-                                </Grid>
-                                <TextBlock Text="{Binding Type}"
-                                           Opacity="0.5" />
-                            </StackPanel>
-                        </DataTemplate>
-                    </ComboBox.ItemTemplate>
+                    <ComboBox.Style>
+                        <Style TargetType="ComboBox">
+                            <Setter Property="ItemTemplate">
+                                <Setter.Value>
+                                    <DataTemplate>
+                                        <StackPanel>
+                                            <Grid>
+                                                <TextBlock Text="{Binding Map}"
+                                                           FontWeight="Bold" />
+                                                <TextBlock Text="{Binding DateTime, StringFormat='HH:mm'}"
+                                                           FontSize="10.667"
+                                                           HorizontalAlignment="Right"
+                                                           FontWeight="Bold"
+                                                           Opacity="0.5" />
+                                            </Grid>
+                                            <TextBlock Text="{Binding Type}"
+                                                       Opacity="0.5" />
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </Setter.Value>
+                            </Setter>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding LastServer}"
+                                             Value="{x:Null}">
+                                    <Setter Property="Visibility"
+                                            Value="Collapsed" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </ComboBox.Style>
                 </ComboBox>
 
                 <ComboBox x:Name="ServerComboBox"

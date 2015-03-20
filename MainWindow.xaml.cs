@@ -66,6 +66,11 @@ namespace CoD2_Launcher
         }
 
         private ServerInfo _lastServer = null;
+        public ServerInfo LastServer
+        {
+            get { return _lastServer; }
+            set { SetProperty(ref _lastServer, value); }
+        }
 
         private ObservableCollection<LastMap> _lastMaps = new ObservableCollection<LastMap>();
         public ObservableCollection<LastMap> LastMaps
@@ -290,16 +295,16 @@ namespace CoD2_Launcher
                     Dispatcher.BeginInvoke((Action)(() =>
                     {
                         ServerInfo si = ServerInfo.Parse(CurrentServer);
-                        if (_lastServer != null && !_lastServer.Equals(si))
+                        if (LastServer == null || !LastServer.Equals(si))
                         {
-                            _lastServer = si;
+                            LastServer = si;
                             LastMaps.Clear();
                         }
 
                         CurrentGame = Game.GetStatus(si);
                         if (CurrentGame != null)
                         {
-                            if (LastMaps.Count == 0 || (LastMaps.Last().Map != CurrentGame.Map && LastMaps.Last().Type != CurrentGame.Type))
+                            if (LastMaps.Count == 0 || (LastMaps.First().Map != CurrentGame.Map || LastMaps.First().Type != CurrentGame.Type))
                             {
                                 LastMaps.Insert(0, new LastMap
                                 {
@@ -309,6 +314,10 @@ namespace CoD2_Launcher
                                 });
                                 LastMapsComboBox.SelectedIndex = 0;
                             }
+                        }
+                        else
+                        {
+                            LastServer = null;
                         }
                     }));
                 }, null, 0, minute);
