@@ -319,6 +319,11 @@ namespace CoD2_Launcher
                         {
                             LastServer = null;
                         }
+
+                        while (LastMaps.Count > 8)
+                        {
+                            LastMaps.RemoveAt(LastMaps.Count - 1);
+                        }
                     }));
                 }, null, 0, minute);
             }
