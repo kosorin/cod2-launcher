@@ -114,17 +114,25 @@
                                 <Setter.Value>
                                     <DataTemplate>
                                         <StackPanel>
+
                                             <Grid>
                                                 <TextBlock Text="{Binding Map}"
                                                            FontWeight="Bold" />
                                                 <TextBlock Text="{Binding DateTime, StringFormat='HH:mm'}"
                                                            FontSize="10.667"
                                                            HorizontalAlignment="Right"
-                                                           FontWeight="Bold"
-                                                           Opacity="0.5" />
+                                                           FontWeight="Bold">
+                                                    <TextBlock.Foreground>
+                                                        <SolidColorBrush Color="{Binding TypeColor}" />
+                                                    </TextBlock.Foreground>
+                                                </TextBlock>
                                             </Grid>
                                             <TextBlock Text="{Binding Type}"
-                                                       Opacity="0.5" />
+                                                       Opacity="0.8">
+                                                <TextBlock.Foreground>
+                                                    <SolidColorBrush Color="{Binding TypeColor}" />
+                                                </TextBlock.Foreground>
+                                            </TextBlock>
                                         </StackPanel>
                                     </DataTemplate>
                                 </Setter.Value>

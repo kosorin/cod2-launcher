@@ -6,6 +6,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Media;
 
 namespace CoD2_Launcher
 {
@@ -43,6 +44,8 @@ namespace CoD2_Launcher
         public int MaxPrivatePlayers { get; set; }
 
         public string Type { get; set; }
+
+        public Color TypeColor { get; set; }
 
         public string Map { get; set; }
 
@@ -163,13 +166,13 @@ namespace CoD2_Launcher
                 string type = game.Settings.ContainsKey("g_gametype") ? game.Settings["g_gametype"] : "<Unknown>";
                 switch (type)
                 {
-                case "dm": game.Type = "Deathmatch"; break;
-                case "sd": game.Type = "Search and Destroy"; break;
-                case "utd": game.Type = "UT Domination"; break;
-                case "tdm": game.Type = "Team Deathmatch"; break;
-                case "ctf": game.Type = "Capture The Flag"; break;
-                case "hq": game.Type = "Headquarters"; break;
-                default: game.Type = type; break;
+                case "dm": game.Type = "Deathmatch"; game.TypeColor = Colors.Maroon; break;
+                case "sd": game.Type = "Search and Destroy"; game.TypeColor = Colors.Blue; break;
+                case "utd": game.Type = "UT Domination"; game.TypeColor = Colors.Purple; break;
+                case "tdm": game.Type = "Team Deathmatch"; game.TypeColor = Colors.Green; break;
+                case "ctf": game.Type = "Capture The Flag"; game.TypeColor = Colors.Orange; break;
+                case "hq": game.Type = "Headquarters"; game.TypeColor = Colors.DeepPink; break;
+                default: game.Type = type; game.TypeColor = Colors.Black; break;
                 }
 
                 // Map
