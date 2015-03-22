@@ -57,6 +57,7 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Game.cs" />
+    <Compile Include="GameTypeColorConverter.cs" />
     <Compile Include="LastMap.cs" />
     <Compile Include="Player.cs" />
     <Compile Include="ServerInfo.cs" />

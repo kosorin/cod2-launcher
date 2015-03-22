@@ -15,6 +15,6 @@ namespace CoD2_Launcher
 
         public string Type { get; set; }
 
-        public Color TypeColor { get; set; }
+        public string ShortType { get; set; }
     }
 }

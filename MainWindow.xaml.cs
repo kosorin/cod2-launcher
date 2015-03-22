@@ -311,7 +311,7 @@ namespace CoD2_Launcher
                                     DateTime = DateTime.Now,
                                     Map = CurrentGame.Map,
                                     Type = CurrentGame.Type,
-                                    TypeColor = CurrentGame.TypeColor
+                                    ShortType = CurrentGame.ShortType
                                 });
                                 LastMapsComboBox.SelectedIndex = 0;
                             }
