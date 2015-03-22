@@ -12,6 +12,7 @@
 
     <Window.Resources>
         <local:GameTypeColorConverter x:Key="GameTypeColorConverter" />
+        <local:RefreshRateTextConverter x:Key="RefreshRateTextConverter" />
         <Style TargetType="{x:Type Button}">
             <Setter Property="Padding"
                     Value="8,2" />
@@ -182,10 +183,19 @@
                                 Click="DefaultServer_Click"
                                 Margin="5,0,0,0" />
                     </StackPanel>
-
-                    <Button Content="Obnovit"
-                            Click="RefreshStatus_Click"
-                            HorizontalAlignment="Right" />
+                    <StackPanel Orientation="Horizontal"
+                                HorizontalAlignment="Right">
+                        <Button Content="Obnovit"
+                                Click="RefreshStatus_Click" />
+                        <ComboBox x:Name="RefreshRateComboBox"
+                                  SelectionChanged="RefreshRateComboBox_SelectionChanged">
+                            <ComboBox.ItemTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Converter={StaticResource RefreshRateTextConverter}}" />
+                                </DataTemplate>
+                            </ComboBox.ItemTemplate>
+                        </ComboBox>
+                    </StackPanel>
                 </Grid>
 
                 <Grid Margin="0,20,0,0">
@@ -216,6 +226,13 @@
                  HorizontalScrollBarVisibility="Auto"
                  FontFamily="Consolas"
                  IsReadOnly="True"
-                 Padding="4,2,0,0" />
+                 Padding="4,2,0,0">
+            <TextBox.ContextMenu>
+                <ContextMenu>
+                    <MenuItem Header="Vyčistit"
+                              Click="MenuItem_Click" />
+                </ContextMenu>
+            </TextBox.ContextMenu>
+        </TextBox>
     </Grid>
 </Window>

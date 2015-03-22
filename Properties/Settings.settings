@@ -14,5 +14,8 @@
     <Setting Name="DefaultServer" Type="System.String" Scope="User">
       <Value Profile="(Default)">kafemlynek.cz</Value>
     </Setting>
+    <Setting Name="RefreshRate" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">2</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

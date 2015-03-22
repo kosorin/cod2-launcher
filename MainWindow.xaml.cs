@@ -101,8 +101,17 @@ namespace CoD2_Launcher
             }
             CurrentServer = Properties.Settings.Default.DefaultServer;
 
+            RefreshRateComboBox.ItemsSource = new List<int> { 0, 1, 2, 3, 4, 5, 6, 8, 10, 12, 15 };
+            RefreshRateComboBox.SelectedItem = Properties.Settings.Default.RefreshRate;
+
             _outputter = new TextBoxOutputter(ConsoleTextBox);
             Console.SetOut(_outputter);
+            ResetConsoleText();
+        }
+
+        private void ResetConsoleText()
+        {
+            ConsoleTextBox.Text = "";
             Console.WriteLine(Title);
             Console.WriteLine("-------------------------------------------------");
         }
@@ -277,8 +286,6 @@ namespace CoD2_Launcher
             RefreshStatus();
         }
 
-        private const int _refreshInterval = 2 * 60;
-
         private void RefreshStatus()
         {
             if (_timer != null)
@@ -289,7 +296,7 @@ namespace CoD2_Launcher
 
             if (_timer == null)
             {
-                const int minute = 1000 * _refreshInterval;
+                int minute = 1000 * 60 * Properties.Settings.Default.RefreshRate;
                 _timer = new Timer(o =>
                 {
                     Dispatcher.BeginInvoke((Action)(() =>
@@ -328,6 +335,19 @@ namespace CoD2_Launcher
                     }));
                 }, null, 0, minute);
             }
+        }
+
+        private void MenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            ResetConsoleText();
+        }
+
+        private void RefreshRateComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            Properties.Settings.Default.RefreshRate = (int)RefreshRateComboBox.SelectedItem;
+            Properties.Settings.Default.Save();
+
+            RefreshStatus();
         }
     }
 }
