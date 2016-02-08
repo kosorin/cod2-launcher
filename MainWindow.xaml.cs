@@ -86,9 +86,11 @@ namespace CoD2_Launcher
             set { SetProperty(ref _serverList, value); }
         }
 
-        TextBoxOutputter _outputter;
+        private TextBoxOutputter _outputter;
 
-        Timer _timer = null;
+        private Timer _timer = null;
+
+        private bool _loaded = false;
 
         public MainWindow()
         {
@@ -278,7 +280,10 @@ namespace CoD2_Launcher
 
         private void ServerComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            RefreshStatus();
+            if (_loaded)
+            {
+                RefreshStatus();
+            }
         }
 
         private void RefreshStatus_Click(object sender, RoutedEventArgs e)
@@ -348,6 +353,11 @@ namespace CoD2_Launcher
             Properties.Settings.Default.Save();
 
             RefreshStatus();
+        }
+
+        private void Window_Loaded(object sender, RoutedEventArgs e)
+        {
+            _loaded = true;
         }
     }
 }

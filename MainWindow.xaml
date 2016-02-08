@@ -5,6 +5,7 @@
         xmlns:local="clr-namespace:CoD2_Launcher"
         Title="Call of Duty 2: Spouštěč"
         ResizeMode="NoResize"
+        Loaded="Window_Loaded"
         Width="800"
         Height="700"
         KeyDown="Window_KeyDown"
