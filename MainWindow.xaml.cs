@@ -112,8 +112,8 @@ namespace CoD2_Launcher
         private void ResetConsoleText()
         {
             ConsoleTextBox.Text = "";
-            Console.WriteLine(Title);
-            Console.WriteLine("-------------------------------------------------");
+            Logger.Log(Title);
+            Logger.Log("-------------------------------------------------");
         }
 
         private void Play_Click(object sender, RoutedEventArgs e)
@@ -131,7 +131,7 @@ namespace CoD2_Launcher
         {
             try
             {
-                Console.Write("Spouštím hru na serveru {0}... ", server);
+                Logger.Log($"Spouštím hru na serveru {server}... ", Logger.MessageType.WithoutNewLine);
                 ProcessStartInfo p = new ProcessStartInfo
                 {
                     WorkingDirectory = Path.GetDirectoryName(Properties.Settings.Default.GameExe),
@@ -139,17 +139,17 @@ namespace CoD2_Launcher
                     Arguments = "connect " + server
                 };
                 Process.Start(p);
-                Console.WriteLine("OK");
+                Logger.Log("OK", Logger.MessageType.Continue);
             }
             catch (Exception e)
             {
-                Console.WriteLine(e.Message);
+                Logger.Log(e.Message);
             }
         }
 
         private void KillAll()
         {
-            Console.WriteLine("Zabíjím všechny programy... ");
+            Logger.Log("Zabíjím všechny programy... ");
             Kill(Path.GetFileNameWithoutExtension(Properties.Settings.Default.GameExe));
             Kill("PnkBstrA");
             Kill("PnkBstrB");
@@ -162,13 +162,13 @@ namespace CoD2_Launcher
             {
                 try
                 {
-                    Console.Write("Zabíjím '{0}' ", name);
+                    Logger.Log($"Zabíjím '{name}' ", Logger.MessageType.WithoutNewLine);
                     process.Kill();
-                    Console.WriteLine("OK");
+                    Logger.Log("OK", Logger.MessageType.Continue);
                 }
                 catch (Exception e)
                 {
-                    Console.WriteLine(e.Message);
+                    Logger.Log(e.Message);
                     return false;
                 }
             }
@@ -205,7 +205,7 @@ namespace CoD2_Launcher
         {
             Properties.Settings.Default.DefaultServer = CurrentServer;
             Properties.Settings.Default.Save();
-            Console.WriteLine("Nastaven výchozí server: {0}", CurrentServer);
+            Logger.Log($"Nastaven výchozí server: {CurrentServer}");
         }
 
         private void AddServer(string server)
@@ -221,7 +221,7 @@ namespace CoD2_Launcher
                 ServerList.Add(server);
             }
 
-            Console.WriteLine("Přidán oblíbený server: {0}", server);
+            Logger.Log($"Přidán oblíbený server: {server}");
         }
 
         private void RemoveServer(string server)
@@ -237,7 +237,7 @@ namespace CoD2_Launcher
                 ServerList.Remove(server);
             }
 
-            Console.WriteLine("Odebrán oblíbený server: {0}", server);
+            Logger.Log($"Odebrán oblíbený server: {server}");
         }
 
         private string ShowFileDialog(string path)
@@ -272,7 +272,7 @@ namespace CoD2_Launcher
                 Properties.Settings.Default.GameExe = path;
                 Properties.Settings.Default.Save();
 
-                Console.WriteLine("Nové umístění hry: {0}", path);
+                Logger.Log($"Nové umístění hry: {path}");
             }
         }
 

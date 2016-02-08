@@ -56,7 +56,7 @@ namespace CoD2_Launcher
                 return null;
             }
 
-            Console.Write("Získávám informace ze serveru {0} ... ", server);
+            Logger.Log($"Získávám informace ze serveru {server} ... ", Logger.MessageType.WithoutNewLine);
 
             try
             {
@@ -84,7 +84,7 @@ namespace CoD2_Launcher
                 }
                 if (client.Send(bytes, bytes.Length) != bytes.Length)
                 {
-                    Console.WriteLine("FAIL: chyba odeslání");
+                    Logger.Log("FAIL: chyba odeslání", Logger.MessageType.Continue);
                     return null;
                 }
 
@@ -93,7 +93,7 @@ namespace CoD2_Launcher
                 client.Close();
                 if (bytes == null)
                 {
-                    Console.WriteLine("FAIL: chyba přijímání");
+                    Logger.Log("FAIL: chyba přijímání", Logger.MessageType.Continue);
                     return null;
                 }
                 string[] data = Encoding.ASCII.GetString(bytes).Split('\n');
@@ -201,12 +201,12 @@ namespace CoD2_Launcher
                 }
 
                 sw.Stop();
-                Console.WriteLine("OK ({0} ms)", sw.ElapsedMilliseconds);
+                Logger.Log($"OK ({ sw.ElapsedMilliseconds} ms)", Logger.MessageType.Continue);
                 return game;
             }
             catch (Exception e)
             {
-                Console.WriteLine("FAIL: {0}", e.Message);
+                Logger.Log($"FAIL: {e.Message}", Logger.MessageType.Continue);
                 return null;
             }
         }

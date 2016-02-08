@@ -13,7 +13,7 @@ namespace CoD2_Launcher
             {
                 int minutes = (int)value;
 
-                if (minutes == 0) return "vypnout";
+                if (minutes == 0) return "neobnovovat";
                 if (minutes == 1) return "každou minutu";
                 if (minutes > 1 && minutes < 5) return string.Format("každé {0} minuty", minutes);
                 if (minutes >= 5) return string.Format("každých {0} minut", minutes);

@@ -87,5 +87,10 @@ namespace CoD2_Launcher
             }
             return false;
         }
+
+        public override int GetHashCode()
+        {
+            return Host.GetHashCode() * 17 + Port.GetHashCode();
+        }
     }
 }
