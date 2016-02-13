@@ -117,6 +117,8 @@ namespace CoD2_Launcher
             _trayIcon = new TrayIcon();
             _trayIcon.Visible = true;
             _trayIcon.DoubleClick += TrayIcon_DoubleClick;
+            _trayIcon.BalloonTipIcon = System.Windows.Forms.ToolTipIcon.None;
+            _trayIcon.BalloonTipClicked += TrayIcon_BalloonClick;
 
             var resourceInfo = Application.GetResourceStream(new Uri(@"Resources/Icon.ico", UriKind.Relative));
             _trayIcon.Icon = new Icon(resourceInfo.Stream);
@@ -323,9 +325,8 @@ namespace CoD2_Launcher
 
         private void OnNewMap()
         {
-            if (WindowState == WindowState.Minimized)
+            if (WindowState == WindowState.Minimized && CurrentGame.Players.Count > 2)
             {
-                _trayIcon.BalloonTipIcon = System.Windows.Forms.ToolTipIcon.None;
                 _trayIcon.BalloonTipTitle = CurrentGame.Map.Name;
                 _trayIcon.BalloonTipText = $"{CurrentGame.Map.Type}\nPočet hráčů: {CurrentGame.Players.Count}";
                 _trayIcon.ShowBalloonTip(2500);
@@ -340,7 +341,11 @@ namespace CoD2_Launcher
         }
 
 
-
+        private void TrayIcon_BalloonClick(object sender, EventArgs e)
+        {
+            Show();
+            WindowState = WindowState.Normal;
+        }
         private void TrayIcon_DoubleClick(object sender, EventArgs e)
         {
             Show();
