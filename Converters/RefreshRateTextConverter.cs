@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Globalization;
 using System.Windows.Data;
-using System.Windows.Media;
 
-namespace CoD2_Launcher
+namespace CoD2_Launcher.Converters
 {
     public class RefreshRateTextConverter : IValueConverter
     {

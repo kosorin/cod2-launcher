@@ -49,7 +49,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup>
-    <ApplicationIcon>cod2.ico</ApplicationIcon>
+    <ApplicationIcon>Resources\Icon.ico</ApplicationIcon>
   </PropertyGroup>
   <PropertyGroup>
     <ApplicationManifest>app.manifest</ApplicationManifest>
@@ -57,6 +57,8 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Core" />
@@ -74,14 +76,14 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="Game.cs" />
-    <Compile Include="Logger.cs" />
-    <Compile Include="RefreshRateTextConverter.cs" />
-    <Compile Include="GameTypeColorConverter.cs" />
-    <Compile Include="LastMap.cs" />
-    <Compile Include="Player.cs" />
-    <Compile Include="ServerInfo.cs" />
-    <Compile Include="TextBoxOutputter.cs" />
+    <Compile Include="Models\Game.cs" />
+    <Compile Include="Utils\Logger.cs" />
+    <Compile Include="Models\Map.cs" />
+    <Compile Include="Converters\RefreshRateTextConverter.cs" />
+    <Compile Include="Models\LastMap.cs" />
+    <Compile Include="Models\Player.cs" />
+    <Compile Include="Models\ServerInfo.cs" />
+    <Compile Include="Utils\TextBoxOutputter.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -126,10 +128,10 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="cod2.ico" />
+    <Resource Include="Resources\Icon.ico" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Background.jpg" />
+    <Resource Include="Resources\Background.jpg" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.5">

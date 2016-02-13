@@ -1,25 +1,20 @@
-﻿using Microsoft.Win32;
+﻿using CoD2_Launcher.Models;
+using CoD2_Launcher.Utils;
+using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Drawing;
 using System.IO;
 using System.Linq;
-using System.Net;
-using System.Net.Sockets;
 using System.Runtime.CompilerServices;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
+using TrayIcon = System.Windows.Forms.NotifyIcon;
 
 namespace CoD2_Launcher
 {
@@ -92,9 +87,14 @@ namespace CoD2_Launcher
 
         private bool _loaded = false;
 
+        private TrayIcon _trayIcon = null;
+
+
         public MainWindow()
         {
             InitializeComponent();
+            InitializeTrayIcon();
+
             DataContext = this;
 
             foreach (string server in Properties.Settings.Default.ServerList)
@@ -108,25 +108,30 @@ namespace CoD2_Launcher
 
             _outputter = new TextBoxOutputter(ConsoleTextBox);
             Console.SetOut(_outputter);
-            ResetConsoleText();
+            ClearConsole();
+
         }
 
-        private void ResetConsoleText()
+        private void InitializeTrayIcon()
         {
-            ConsoleTextBox.Text = "";
-            Logger.Log(Title);
-            Logger.Log("-------------------------------------------------");
+            _trayIcon = new TrayIcon();
+            _trayIcon.Visible = true;
+            _trayIcon.DoubleClick += TrayIcon_DoubleClick;
+
+            var resourceInfo = Application.GetResourceStream(new Uri(@"Resources/Icon.ico", UriKind.Relative));
+            _trayIcon.Icon = new Icon(resourceInfo.Stream);
+
+            var menu = new System.Windows.Forms.ContextMenu();
+            menu.MenuItems.Add("Hrát", TrayIcon_Play);
+            menu.MenuItems.Add("-");
+            menu.MenuItems.Add("Konec", TrayIcon_Exit);
+            _trayIcon.ContextMenu = menu;
         }
 
-        private void Play_Click(object sender, RoutedEventArgs e)
+        private void Play()
         {
             KillAll();
             Play(CurrentServer);
-        }
-
-        private void Kill_Click(object sender, RoutedEventArgs e)
-        {
-            KillAll();
         }
 
         private void Play(string server)
@@ -177,39 +182,6 @@ namespace CoD2_Launcher
             return ok;
         }
 
-        private void Window_KeyDown(object sender, KeyEventArgs e)
-        {
-            if (Keyboard.Modifiers == ModifierKeys.Control)
-            {
-                if (e.Key == Key.P)
-                {
-                    KillAll();
-                    Play(CurrentServer);
-                }
-                else if (e.Key == Key.K)
-                {
-                    KillAll();
-                }
-            }
-        }
-
-        private void AddServer_Click(object sender, RoutedEventArgs e)
-        {
-            AddServer(ServerComboBox.Text);
-        }
-
-        private void RemoveServer_Click(object sender, RoutedEventArgs e)
-        {
-            RemoveServer(CurrentServer);
-        }
-
-        private void DefaultServer_Click(object sender, RoutedEventArgs e)
-        {
-            Properties.Settings.Default.DefaultServer = CurrentServer;
-            Properties.Settings.Default.Save();
-            Logger.Log($"Nastaven výchozí server: {CurrentServer}");
-        }
-
         private void AddServer(string server)
         {
             if (!Properties.Settings.Default.ServerList.Contains(server))
@@ -242,21 +214,25 @@ namespace CoD2_Launcher
             Logger.Log($"Odebrán oblíbený server: {server}");
         }
 
-        private string ShowFileDialog(string path)
+        private string ShowFileDialog(string path = null)
         {
             try
             {
                 OpenFileDialog dialog = new OpenFileDialog();
                 dialog.Multiselect = false;
-                if (path != null)
+                if (!string.IsNullOrWhiteSpace(path))
                 {
                     dialog.FileName = Path.GetFileName(path);
                     dialog.InitialDirectory = Path.GetDirectoryName(path);
                 }
+                else
+                {
+                    dialog.InitialDirectory = GetProgramFilesPath();
+                }
                 dialog.CheckFileExists = true;
                 dialog.Filter = "Program|*.exe";
 
-                Nullable<bool> result = dialog.ShowDialog();
+                bool? result = dialog.ShowDialog();
                 if (result == true)
                 {
                     return dialog.FileName;
@@ -264,6 +240,148 @@ namespace CoD2_Launcher
             }
             catch { }
             return null;
+        }
+
+        private string GetProgramFilesPath()
+        {
+            if (8 == IntPtr.Size || (!string.IsNullOrEmpty(Environment.GetEnvironmentVariable("PROCESSOR_ARCHITEW6432"))))
+            {
+                return Environment.GetEnvironmentVariable("ProgramFiles(x86)");
+            }
+            return Environment.GetEnvironmentVariable("ProgramFiles");
+        }
+
+        private void Refresh()
+        {
+            if (_timer != null)
+            {
+                _timer.Dispose();
+                _timer = null;
+            }
+
+            int period = 1000 * 60 * Properties.Settings.Default.RefreshRate;
+            _timer = new Timer(o => Dispatcher.BeginInvoke((Action)OnRefresh), null, 0, period);
+        }
+
+        private void OnRefresh()
+        {
+            ServerInfo si = ServerInfo.Parse(CurrentServer);
+            if (LastServer == null || !LastServer.Equals(si))
+            {
+                LastServer = si;
+                LastMaps.Clear();
+            }
+
+            CurrentGame = Game.Download(si);
+            if (CurrentGame != null)
+            {
+                var lastMap = LastMaps.FirstOrDefault();
+                if (lastMap == null || (lastMap.Name != CurrentGame.Map.Name || lastMap.Type != CurrentGame.Map.Type))
+                {
+                    LastMaps.Insert(0, new LastMap
+                    {
+                        DateTime = DateTime.Now,
+                        Name = CurrentGame.Map.Name,
+                        Type = CurrentGame.Map.Type,
+                        ShortType = CurrentGame.Map.ShortType
+                    });
+                    LastMapsComboBox.SelectedIndex = 0;
+                }
+            }
+            else
+            {
+                LastServer = null;
+            }
+
+            while (LastMaps.Count > 8)
+            {
+                LastMaps.RemoveAt(LastMaps.Count - 1);
+            }
+        }
+
+        private void ClearConsole()
+        {
+            ConsoleTextBox.Text = "";
+            Logger.Log(Title);
+            Logger.Log("-------------------------------------------------");
+        }
+
+
+
+        private void TrayIcon_DoubleClick(object sender, EventArgs e)
+        {
+            Show();
+            WindowState = WindowState.Normal;
+        }
+
+        private void TrayIcon_Play(object sender, EventArgs e)
+        {
+            Play();
+        }
+
+        private void TrayIcon_Exit(object sender, EventArgs e)
+        {
+            Close();
+        }
+
+        protected override void OnClosed(EventArgs e)
+        {
+            if (_trayIcon != null)
+            {
+                _trayIcon.Visible = false;
+            }
+            base.OnClosed(e);
+        }
+
+        protected override void OnStateChanged(EventArgs e)
+        {
+            if (WindowState == WindowState.Minimized)
+            {
+                Hide();
+            }
+            base.OnStateChanged(e);
+        }
+
+        private void Play_Click(object sender, RoutedEventArgs e)
+        {
+            Play();
+        }
+
+        private void Kill_Click(object sender, RoutedEventArgs e)
+        {
+            KillAll();
+        }
+
+        private void Window_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (Keyboard.Modifiers == ModifierKeys.Control)
+            {
+                if (e.Key == Key.P)
+                {
+                    Play();
+                }
+                else if (e.Key == Key.K)
+                {
+                    KillAll();
+                }
+            }
+        }
+
+        private void AddServer_Click(object sender, RoutedEventArgs e)
+        {
+            AddServer(ServerComboBox.Text);
+        }
+
+        private void RemoveServer_Click(object sender, RoutedEventArgs e)
+        {
+            RemoveServer(CurrentServer);
+        }
+
+        private void DefaultServer_Click(object sender, RoutedEventArgs e)
+        {
+            Properties.Settings.Default.DefaultServer = CurrentServer;
+            Properties.Settings.Default.Save();
+            Logger.Log($"Nastaven výchozí server: {CurrentServer}");
         }
 
         private void ChangeGameDir_Click(object sender, RoutedEventArgs e)
@@ -282,69 +400,18 @@ namespace CoD2_Launcher
         {
             if (_loaded)
             {
-                RefreshStatus();
+                Refresh();
             }
         }
 
         private void RefreshStatus_Click(object sender, RoutedEventArgs e)
         {
-            RefreshStatus();
+            Refresh();
         }
 
-        private void RefreshStatus()
+        private void ClearConsole_Click(object sender, RoutedEventArgs e)
         {
-            if (_timer != null)
-            {
-                _timer.Dispose();
-                _timer = null;
-            }
-
-            if (_timer == null)
-            {
-                int minute = 1000 * 60 * Properties.Settings.Default.RefreshRate;
-                _timer = new Timer(o =>
-                {
-                    Dispatcher.BeginInvoke((Action)(() =>
-                    {
-                        ServerInfo si = ServerInfo.Parse(CurrentServer);
-                        if (LastServer == null || !LastServer.Equals(si))
-                        {
-                            LastServer = si;
-                            LastMaps.Clear();
-                        }
-
-                        CurrentGame = Game.GetStatus(si);
-                        if (CurrentGame != null)
-                        {
-                            if (LastMaps.Count == 0 || (LastMaps.First().Map != CurrentGame.Map || LastMaps.First().Type != CurrentGame.Type))
-                            {
-                                LastMaps.Insert(0, new LastMap
-                                {
-                                    DateTime = DateTime.Now,
-                                    Map = CurrentGame.Map,
-                                    Type = CurrentGame.Type,
-                                    ShortType = CurrentGame.ShortType
-                                });
-                                LastMapsComboBox.SelectedIndex = 0;
-                            }
-                        }
-                        else
-                        {
-                            LastServer = null;
-                        }
-
-                        while (LastMaps.Count > 8)
-                        {
-                            LastMaps.RemoveAt(LastMaps.Count - 1);
-                        }
-                    }));
-                }, null, 0, minute);
-            }
-        }
-
-        private void MenuItem_Click(object sender, RoutedEventArgs e)
-        {
-            ResetConsoleText();
+            ClearConsole();
         }
 
         private void RefreshRateComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -352,7 +419,7 @@ namespace CoD2_Launcher
             Properties.Settings.Default.RefreshRate = (int)RefreshRateComboBox.SelectedItem;
             Properties.Settings.Default.Save();
 
-            RefreshStatus();
+            Refresh();
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)

@@ -1,25 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Linq;
 
-namespace CoD2_Launcher
+namespace CoD2_Launcher.Models
 {
     public class ServerInfo
     {
-        public ServerInfo()
-        {
-            Port = DefaultPort;
-        }
+        public static int DefaultPort => 28960;
+
 
         public string Name { get; set; }
 
         public string Host { get; set; }
 
-        public int Port { get; set; }
+        public int Port { get; set; } = DefaultPort;
 
-        public static int DefaultPort { get { return 28960; } }
 
         public static ServerInfo Parse(string server)
         {

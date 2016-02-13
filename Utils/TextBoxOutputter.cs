@@ -3,7 +3,7 @@ using System.IO;
 using System.Text;
 using System.Windows.Controls;
 
-namespace CoD2_Launcher
+namespace CoD2_Launcher.Utils
 {
     public class TextBoxOutputter : TextWriter
     {
@@ -24,9 +24,6 @@ namespace CoD2_Launcher
             }));
         }
 
-        public override Encoding Encoding
-        {
-            get { return System.Text.Encoding.UTF8; }
-        }
+        public override Encoding Encoding => Encoding.UTF8;
     }
 }

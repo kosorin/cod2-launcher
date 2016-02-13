@@ -9,13 +9,13 @@
 &lt;/ArrayOfString&gt;</Value>
     </Setting>
     <Setting Name="GameExe" Type="System.String" Scope="User">
-      <Value Profile="(Default)">C:\CoD2MP_s.exe</Value>
+      <Value Profile="(Default)" />
     </Setting>
     <Setting Name="DefaultServer" Type="System.String" Scope="User">
       <Value Profile="(Default)">kafemlynek.cz</Value>
     </Setting>
     <Setting Name="RefreshRate" Type="System.Int32" Scope="User">
-      <Value Profile="(Default)">2</Value>
+      <Value Profile="(Default)">4</Value>
     </Setting>
   </Settings>
 </SettingsFile>

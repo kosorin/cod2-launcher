@@ -1,28 +1,20 @@
-﻿using System;
+﻿using CoD2_Launcher.Utils;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Media;
 
-namespace CoD2_Launcher
+namespace CoD2_Launcher.Models
 {
     public class Game
     {
-        private Game()
-        {
-            Players = new List<Player>();
-            Settings = new Dictionary<string, string>();
-        }
+        public Dictionary<string, string> Settings { get; set; } = new Dictionary<string, string>();
 
-        public Dictionary<string, string> Settings { get; set; }
+        public List<Player> Players { get; set; } = new List<Player>();
 
-        public List<Player> Players { get; set; }
-
-        public string PlayersCountString
+        public string PlayersCountInfo
         {
             get
             {
@@ -43,13 +35,10 @@ namespace CoD2_Launcher
 
         public int MaxPrivatePlayers { get; set; }
 
-        public string Type { get; set; }
+        public Map Map { get; set; } = new Map();
 
-        public string ShortType { get; set; }
 
-        public string Map { get; set; }
-
-        public static Game GetStatus(ServerInfo server)
+        public static Game Download(ServerInfo server)
         {
             if (server == null)
             {
@@ -162,43 +151,43 @@ namespace CoD2_Launcher
                     game.MaxPlayers = 0;
                 }
 
-                // Type
-                string type = game.Settings.ContainsKey("g_gametype") ? game.Settings["g_gametype"] : "<Unknown>";
-                switch (type)
-                {
-                case "dm": game.Type = "Deathmatch"; break;
-                case "sd": game.Type = "Search and Destroy"; break;
-                case "utd": game.Type = "UT Domination"; break;
-                case "tdm": game.Type = "Team Deathmatch"; break;
-                case "ctf": game.Type = "Capture The Flag"; break;
-                case "hq": game.Type = "Headquarters"; break;
-                default: game.Type = type; break;
-                }
-                game.ShortType = type.ToUpper();
-
                 // Map
                 string map = game.Settings.ContainsKey("mapname") ? game.Settings["mapname"] : "<Unknown>";
                 switch (map)
                 {
-                case "mp_downtown": game.Map = "Moscow, Russia"; break;
-                case "mp_toujane": game.Map = "Toujane, Tunisia"; break;
-                case "mp_burgundy": game.Map = "Burgundy, France"; break;
-                case "mp_carentan": game.Map = "Carentan, France"; break;
-                case "mp_trainstation": game.Map = "Caen, France"; break;
-                case "mp_dawnville": game.Map = "St. Mere Eglise, France"; break;
-                case "mp_railyard": game.Map = "Stalingrad, Russia"; break;
-                case "mp_farmhouse": game.Map = "Beltot, France"; break;
-                case "mp_harbor": game.Map = "Rostov, Russia"; break;
-                case "mp_matmata": game.Map = "Matmata, Tunisia"; break;
-                case "mp_leningrad": game.Map = "Leningrad, Russia"; break;
-                case "mp_rhine": game.Map = "Wallendar, Germany"; break;
-                case "mp_decoy": game.Map = "El Alamein, Egypt"; break;
-                case "mp_breakout": game.Map = "Villers-Bocage, France"; break;
-                case "mp_brecourt": game.Map = "Brecourt, France"; break;
-                case "mp_eindhoven": game.Map = "Eindhoven, Holland"; break;
-                case "mp_tripoli": game.Map = "Tripoli, Libya"; break;
-                default: game.Map = map; break;
+                case "mp_downtown": game.Map.Name = "Moscow, Russia"; break;
+                case "mp_toujane": game.Map.Name = "Toujane, Tunisia"; break;
+                case "mp_burgundy": game.Map.Name = "Burgundy, France"; break;
+                case "mp_carentan": game.Map.Name = "Carentan, France"; break;
+                case "mp_trainstation": game.Map.Name = "Caen, France"; break;
+                case "mp_dawnville": game.Map.Name = "St. Mere Eglise, France"; break;
+                case "mp_railyard": game.Map.Name = "Stalingrad, Russia"; break;
+                case "mp_farmhouse": game.Map.Name = "Beltot, France"; break;
+                case "mp_harbor": game.Map.Name = "Rostov, Russia"; break;
+                case "mp_matmata": game.Map.Name = "Matmata, Tunisia"; break;
+                case "mp_leningrad": game.Map.Name = "Leningrad, Russia"; break;
+                case "mp_rhine": game.Map.Name = "Wallendar, Germany"; break;
+                case "mp_decoy": game.Map.Name = "El Alamein, Egypt"; break;
+                case "mp_breakout": game.Map.Name = "Villers-Bocage, France"; break;
+                case "mp_brecourt": game.Map.Name = "Brecourt, France"; break;
+                case "mp_eindhoven": game.Map.Name = "Eindhoven, Holland"; break;
+                case "mp_tripoli": game.Map.Name = "Tripoli, Libya"; break;
+                default: game.Map.Name = map; break;
                 }
+
+                // Type
+                string type = game.Settings.ContainsKey("g_gametype") ? game.Settings["g_gametype"] : "<Unknown>";
+                switch (type)
+                {
+                case "dm": game.Map.Type = "Deathmatch"; break;
+                case "sd": game.Map.Type = "Search and Destroy"; break;
+                case "utd": game.Map.Type = "UT Domination"; break;
+                case "tdm": game.Map.Type = "Team Deathmatch"; break;
+                case "ctf": game.Map.Type = "Capture The Flag"; break;
+                case "hq": game.Map.Type = "Headquarters"; break;
+                default: game.Map.Type = type; break;
+                }
+                game.Map.ShortType = type.ToUpper();
 
                 sw.Stop();
                 Logger.Log($"OK ({ sw.ElapsedMilliseconds} ms)", Logger.MessageType.Continue);
