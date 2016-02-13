@@ -103,7 +103,7 @@ namespace CoD2_Launcher
             }
             CurrentServer = Properties.Settings.Default.DefaultServer;
 
-            RefreshRateComboBox.ItemsSource = new List<int> { 0, 1, 2, 3, 4, 5, 6, 8, 10, 12, 15 };
+            RefreshRateComboBox.ItemsSource = new List<int> { 0, 1, 2, 3, 4, 5, 6, 7, 8, 10, 12, 15 };
             RefreshRateComboBox.SelectedItem = Properties.Settings.Default.RefreshRate;
 
             _outputter = new TextBoxOutputter(ConsoleTextBox);
@@ -184,18 +184,24 @@ namespace CoD2_Launcher
 
         private void AddServer(string server)
         {
+            bool isNew = false;
             if (!Properties.Settings.Default.ServerList.Contains(server))
             {
                 Properties.Settings.Default.ServerList.Add(server);
                 Properties.Settings.Default.Save();
+                isNew = true;
             }
 
             if (!ServerList.Contains(server))
             {
                 ServerList.Add(server);
+                isNew = true;
             }
 
-            Logger.Log($"Přidán oblíbený server: {server}");
+            if (isNew)
+            {
+                Logger.Log($"Přidán oblíbený server: {server}");
+            }
         }
 
         private void RemoveServer(string server)
@@ -212,6 +218,20 @@ namespace CoD2_Launcher
             }
 
             Logger.Log($"Odebrán oblíbený server: {server}");
+        }
+
+        private void DefaultServer(string server)
+        {
+            AddServer(server);
+
+            if (!Properties.Settings.Default.ServerList.Contains(server))
+            {
+                Properties.Settings.Default.ServerList.Add(server);
+            }
+            Properties.Settings.Default.DefaultServer = server;
+            Properties.Settings.Default.Save();
+
+            Logger.Log($"Nastaven výchozí server: {server}");
         }
 
         private string ShowFileDialog(string path = null)
@@ -278,13 +298,15 @@ namespace CoD2_Launcher
                 var lastMap = LastMaps.FirstOrDefault();
                 if (lastMap == null || (lastMap.Name != CurrentGame.Map.Name || lastMap.Type != CurrentGame.Map.Type))
                 {
-                    LastMaps.Insert(0, new LastMap
+                    var newMap = new LastMap
                     {
                         DateTime = DateTime.Now,
                         Name = CurrentGame.Map.Name,
                         Type = CurrentGame.Map.Type,
                         ShortType = CurrentGame.Map.ShortType
-                    });
+                    };
+                    OnNewMap();
+                    LastMaps.Insert(0, newMap);
                     LastMapsComboBox.SelectedIndex = 0;
                 }
             }
@@ -296,6 +318,17 @@ namespace CoD2_Launcher
             while (LastMaps.Count > 8)
             {
                 LastMaps.RemoveAt(LastMaps.Count - 1);
+            }
+        }
+
+        private void OnNewMap()
+        {
+            if (WindowState == WindowState.Minimized)
+            {
+                _trayIcon.BalloonTipIcon = System.Windows.Forms.ToolTipIcon.None;
+                _trayIcon.BalloonTipTitle = CurrentGame.Map.Name;
+                _trayIcon.BalloonTipText = $"{CurrentGame.Map.Type}\nPočet hráčů: {CurrentGame.Players.Count}";
+                _trayIcon.ShowBalloonTip(2500);
             }
         }
 
@@ -374,14 +407,12 @@ namespace CoD2_Launcher
 
         private void RemoveServer_Click(object sender, RoutedEventArgs e)
         {
-            RemoveServer(CurrentServer);
+            RemoveServer(ServerComboBox.Text);
         }
 
         private void DefaultServer_Click(object sender, RoutedEventArgs e)
         {
-            Properties.Settings.Default.DefaultServer = CurrentServer;
-            Properties.Settings.Default.Save();
-            Logger.Log($"Nastaven výchozí server: {CurrentServer}");
+            DefaultServer(ServerComboBox.Text);
         }
 
         private void ChangeGameDir_Click(object sender, RoutedEventArgs e)

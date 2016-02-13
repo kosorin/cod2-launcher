@@ -58,7 +58,7 @@ namespace CoD2_Launcher.Models
             string format;
             if (!string.IsNullOrWhiteSpace(Name))
             {
-                format = "{0} ({1}:{2})";
+                format = "{0}";
             }
             else
             {
