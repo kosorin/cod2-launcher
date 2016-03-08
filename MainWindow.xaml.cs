@@ -109,7 +109,6 @@ namespace CoD2_Launcher
             _outputter = new TextBoxOutputter(ConsoleTextBox);
             Console.SetOut(_outputter);
             ClearConsole();
-
         }
 
         private void InitializeTrayIcon()
@@ -132,7 +131,6 @@ namespace CoD2_Launcher
 
         private void Play()
         {
-            KillAll();
             Play(CurrentServer);
         }
 
@@ -154,34 +152,6 @@ namespace CoD2_Launcher
             {
                 Logger.Log(e.Message);
             }
-        }
-
-        private void KillAll()
-        {
-            Logger.Log("Zabíjím všechny programy... ");
-            Kill(Path.GetFileNameWithoutExtension(Properties.Settings.Default.GameExe));
-            Kill("PnkBstrA");
-            Kill("PnkBstrB");
-        }
-
-        private bool Kill(string name)
-        {
-            bool ok = true;
-            foreach (Process process in Process.GetProcessesByName(name))
-            {
-                try
-                {
-                    Logger.Log($"Zabíjím '{name}' ", Logger.MessageType.WithoutNewLine);
-                    process.Kill();
-                    Logger.Log("OK", Logger.MessageType.Continue);
-                }
-                catch (Exception e)
-                {
-                    Logger.Log(e.Message);
-                    return false;
-                }
-            }
-            return ok;
         }
 
         private void AddServer(string server)
@@ -385,22 +355,17 @@ namespace CoD2_Launcher
             Play();
         }
 
-        private void Kill_Click(object sender, RoutedEventArgs e)
-        {
-            KillAll();
-        }
-
         private void Window_KeyDown(object sender, KeyEventArgs e)
         {
             if (Keyboard.Modifiers == ModifierKeys.Control)
             {
-                if (e.Key == Key.P)
+                if (e.Key == Key.H)
                 {
                     Play();
                 }
-                else if (e.Key == Key.K)
+                else if (e.Key == Key.O)
                 {
-                    KillAll();
+                    Refresh();
                 }
             }
         }

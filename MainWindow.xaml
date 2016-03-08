@@ -164,7 +164,7 @@
                                 Content="Výchozí" />
                     </StackPanel>
                     <StackPanel HorizontalAlignment="Right" Orientation="Horizontal">
-                        <Button Click="RefreshStatus_Click" Content="Obnovit" />
+                        <Button Click="RefreshStatus_Click" Content="_Obnovit" ToolTip="Obnovit stav hry (Ctrl+O)" />
                         <ComboBox x:Name="RefreshRateComboBox" SelectionChanged="RefreshRateComboBox_SelectionChanged">
                             <ComboBox.ItemTemplate>
                                 <DataTemplate>
@@ -175,21 +175,12 @@
                     </StackPanel>
                 </Grid>
 
-                <Grid Margin="0,20,0,0">
-                    <Grid.RowDefinitions>
-                        <RowDefinition />
-                        <RowDefinition Height="5" />
-                        <RowDefinition />
-                    </Grid.RowDefinitions>
-                    <Button Click="Play_Click"
-                            Content="Hrát"
-                            FontSize="24"
-                            Padding="20,10" />
-                    <Button Grid.Row="2"
-                            Click="Kill_Click"
-                            Content="Zabít"
-                            FontSize="12" />
-                </Grid>
+                <Button Click="Play_Click"
+                        ToolTip="Spustí hru na vybraném serveru (Ctrl+H)"
+                        Content="_Hrát"
+                        FontSize="24"
+                        Margin="0,20,0,0"
+                        Padding="20,10" />
             </StackPanel>
         </Grid>
 
