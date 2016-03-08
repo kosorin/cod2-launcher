@@ -104,7 +104,7 @@
         <DockPanel LastChildFill="False" VerticalAlignment="Top" Margin="5">
             <Button DockPanel.Dock="Right"
                     VerticalAlignment="Center"
-                    ToolTip="Minimalizovat"
+                    ToolTip="Zavřít"
                     Margin="5,0,0,0"
                     Height="32"
                     Width="32"
@@ -114,7 +114,7 @@
                       Stretch="Uniform" Fill="{StaticResource RedBrush}" Width="12" Margin="0,0,0,0" />
             </Button>
             <Button HorizontalAlignment="Center"
-                    ToolTip="Zavřít"
+                    ToolTip="Minimalizovat"
                     VerticalAlignment="Center"
                     Margin="5,0,0,0"
                     DockPanel.Dock="Right"
