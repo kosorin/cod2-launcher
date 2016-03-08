@@ -56,7 +56,19 @@ namespace CoD2_Launcher
         public string CurrentServer
         {
             get { return ServerComboBox.Text; }
-            set { ServerComboBox.Text = value; }
+            set
+            {
+                ServerComboBox.Text = value;
+                if (_trayPlayItem != null)
+                {
+                    var text = _trayPlayItemPrefix;
+                    if (!string.IsNullOrWhiteSpace(value))
+                    {
+                        text += $" ({value})";
+                    }
+                    _trayPlayItem.Text = text;
+                }
+            }
         }
 
         private ServerInfo _lastServer = null;
@@ -87,6 +99,10 @@ namespace CoD2_Launcher
         private bool _loaded = false;
 
         private TrayIcon _trayIcon = null;
+
+        private System.Windows.Forms.MenuItem _trayPlayItem = null;
+
+        private string _trayPlayItemPrefix = "&Hrát";
 
 
         public MainWindow()
@@ -122,9 +138,10 @@ namespace CoD2_Launcher
             _trayIcon.Icon = new Icon(resourceInfo.Stream);
 
             var menu = new System.Windows.Forms.ContextMenu();
-            menu.MenuItems.Add("Hrát", TrayIcon_Play);
+            _trayPlayItem = new System.Windows.Forms.MenuItem(_trayPlayItemPrefix, TrayIcon_Play);
+            menu.MenuItems.Add(_trayPlayItem);
             menu.MenuItems.Add("-");
-            menu.MenuItems.Add("Konec", TrayIcon_Exit);
+            menu.MenuItems.Add("U&končit", TrayIcon_Exit);
             _trayIcon.ContextMenu = menu;
         }
 
