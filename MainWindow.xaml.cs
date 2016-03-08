@@ -12,6 +12,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -281,11 +282,15 @@ namespace CoD2_Launcher
             }
 
             int period = 1000 * 60 * Properties.Settings.Default.RefreshRate;
-            _timer = new Timer(o => Dispatcher.BeginInvoke((Action)OnRefresh), null, 0, period);
+            _timer = new Timer(async state => await Dispatcher.InvokeAsync(OnRefresh), null, 0, period);
         }
 
-        private void OnRefresh()
+        private async Task OnRefresh()
         {
+            if (string.IsNullOrWhiteSpace(CurrentServer))
+            {
+                return;
+            }
             ServerInfo si = ServerInfo.Parse(CurrentServer);
             if (LastServer == null || !LastServer.Equals(si))
             {
@@ -293,7 +298,7 @@ namespace CoD2_Launcher
                 LastMaps.Clear();
             }
 
-            CurrentGame = Game.Download(si);
+            CurrentGame = await Game.Download(si);
             if (CurrentGame != null)
             {
                 var lastMap = LastMaps.FirstOrDefault();

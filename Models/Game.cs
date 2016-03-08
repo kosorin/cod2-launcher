@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace CoD2_Launcher.Models
 {
@@ -38,7 +39,7 @@ namespace CoD2_Launcher.Models
         public Map Map { get; set; } = new Map();
 
 
-        public static Game Download(ServerInfo server)
+        public static async Task<Game> Download(ServerInfo server)
         {
             if (server == null)
             {
@@ -60,7 +61,8 @@ namespace CoD2_Launcher.Models
                 }
                 catch (FormatException)
                 {
-                    ip = Dns.GetHostEntry(server.Host).AddressList[0];
+                    var dnsResult = await Dns.GetHostEntryAsync(server.Host);
+                    ip = dnsResult.AddressList[0];
                 }
                 IPEndPoint ep = new IPEndPoint(ip, server.Port);
                 client.Connect(ep);
@@ -71,14 +73,15 @@ namespace CoD2_Launcher.Models
                 {
                     bytes[i] = 0xFF;
                 }
-                if (client.Send(bytes, bytes.Length) != bytes.Length)
+                if (await client.SendAsync(bytes, bytes.Length) != bytes.Length)
                 {
                     Logger.Log("FAIL: chyba odeslání", Logger.MessageType.Continue);
                     return null;
                 }
 
                 // Příjem odpovědi
-                bytes = client.Receive(ref ep);
+                var receiveResult = await client.ReceiveAsync();
+                bytes = receiveResult.Buffer;
                 client.Close();
                 if (bytes == null)
                 {
