@@ -5,35 +5,130 @@
         xmlns:local="clr-namespace:CoD2_Launcher"
         xmlns:converters="clr-namespace:CoD2_Launcher.Converters"
         Title="Call of Duty 2: Spouštěč"
+        AllowsTransparency="True"
+        Background="Transparent"
+        WindowStyle="None"
+        BorderThickness="1"
         Width="800"
         Height="700"
         KeyDown="Window_KeyDown"
         Loaded="Window_Loaded"
+        MouseDown="Window_MouseDown"
         ResizeMode="CanMinimize"
         WindowStartupLocation="CenterScreen">
 
     <Window.Resources>
+
+        <Color x:Key="RedColor">#660000</Color>
+        <SolidColorBrush x:Key="RedBrush" Color="{StaticResource RedColor}" />
+
+        <SolidColorBrush x:Key="WindowButtonBackgroundFocusBrush" Color="Black" Opacity="0.75" />
+        <SolidColorBrush x:Key="WindowButtonBackgroundNormalBrush" Color="Black" Opacity="0.25" />
+        <SolidColorBrush x:Key="WindowButtonBorderFocusBrush" Color="{StaticResource RedColor}" />
+        <SolidColorBrush x:Key="WindowButtonBorderNormalBrush" Color="{StaticResource RedColor}" Opacity="0.5" />
+
         <converters:RefreshRateTextConverter x:Key="RefreshRateTextConverter" />
+
         <Style TargetType="{x:Type Button}">
             <Setter Property="Padding" Value="8,2" />
         </Style>
+
+        <Style x:Key="MetroWindowButtonStyle" TargetType="{x:Type Button}">
+            <Setter Property="FocusVisualStyle">
+                <Setter.Value>
+                    <Style>
+                        <Setter Property="Control.Template">
+                            <Setter.Value>
+                                <ControlTemplate>
+                                    <Rectangle Margin="2" SnapsToDevicePixels="True" Stroke="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}" StrokeThickness="1" StrokeDashArray="1 2"/>
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                    </Style>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="Background" Value="{StaticResource WindowButtonBackgroundNormalBrush}"/>
+            <Setter Property="BorderBrush" Value="{StaticResource WindowButtonBorderNormalBrush}"/>
+            <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="Padding" Value="1"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type Button}">
+                        <Border x:Name="border" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}" SnapsToDevicePixels="True">
+                            <ContentPresenter x:Name="contentPresenter" ContentTemplate="{TemplateBinding ContentTemplate}" Content="{TemplateBinding Content}" ContentStringFormat="{TemplateBinding ContentStringFormat}" Focusable="False" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" Margin="{TemplateBinding Padding}" RecognizesAccessKey="True" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" TargetName="border" Value="{StaticResource WindowButtonBackgroundFocusBrush}"/>
+                                <Setter Property="BorderBrush" TargetName="border" Value="{StaticResource WindowButtonBorderFocusBrush}"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter Property="Background" TargetName="border" Value="{StaticResource WindowButtonBackgroundFocusBrush}"/>
+                                <Setter Property="BorderBrush" TargetName="border" Value="{StaticResource WindowButtonBorderFocusBrush}"/>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter Property="Background" TargetName="border" Value="{StaticResource WindowButtonBackgroundFocusBrush}"/>
+                                <Setter Property="BorderBrush" TargetName="border" Value="{StaticResource WindowButtonBorderFocusBrush}"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
     </Window.Resources>
 
-    <Grid Background="Black">
+    <Window.BorderBrush>
+        <SolidColorBrush Color="{StaticResource RedColor}" />
+    </Window.BorderBrush>
+
+    <Grid>
         <Grid.RowDefinitions>
             <RowDefinition />
             <RowDefinition Height="150" />
         </Grid.RowDefinitions>
 
-        <Image Width="800" Height="600" Source="Resources/Background.jpg" />
+        <Image Width="800" Height="600" Source="Resources/Background.jpg" Opacity="0.5" />
         <Border>
             <Border.Background>
-                <LinearGradientBrush StartPoint="0.5,0" EndPoint="0.5,1">
-                    <GradientStop Offset="0" Color="#cc000000" />
-                    <GradientStop Offset="1" Color="#cc660000" />
+                <LinearGradientBrush StartPoint="0.5,0" EndPoint="0.5,1" Opacity="0.8">
+                    <GradientStop Offset="0" Color="Black" />
+                    <GradientStop Offset="1" Color="{StaticResource RedColor}" />
                 </LinearGradientBrush>
             </Border.Background>
         </Border>
+
+        <DockPanel LastChildFill="False" VerticalAlignment="Top" Margin="5">
+            <Button DockPanel.Dock="Right"
+                    VerticalAlignment="Center"
+                    ToolTip="Minimalizovat"
+                    Margin="5,0,0,0"
+                    Height="32"
+                    Width="32"
+                    Style="{DynamicResource MetroWindowButtonStyle}"
+                    Click="Close_Click">
+                <Path Data="F1M54.0573,47.8776L38.1771,31.9974 54.0547,16.1198C55.7604,14.4141 55.7604,11.6511 54.0573,9.94531 52.3516,8.23962 49.5859,8.23962 47.8802,9.94531L32.0026,25.8229 16.1224,9.94531C14.4167,8.23962 11.6511,8.23962 9.94794,9.94531 8.24219,11.6511 8.24219,14.4141 9.94794,16.1198L25.8255,32 9.94794,47.8776C8.24219,49.5834 8.24219,52.3477 9.94794,54.0534 11.6511,55.7572 14.4167,55.7585 16.1224,54.0534L32.0026,38.1745 47.8802,54.0534C49.5859,55.7585 52.3516,55.7572 54.0573,54.0534 55.7604,52.3477 55.763,49.5834 54.0573,47.8776z"
+                      Stretch="Uniform" Fill="{StaticResource RedBrush}" Width="12" Margin="0,0,0,0" />
+            </Button>
+            <Button HorizontalAlignment="Center"
+                    ToolTip="Zavřít"
+                    VerticalAlignment="Center"
+                    Margin="5,0,0,0"
+                    DockPanel.Dock="Right"
+                    Height="32"
+                    Width="32"
+                    Style="{DynamicResource MetroWindowButtonStyle}"
+                    Click="Minimize_Click"
+                    VerticalContentAlignment="Bottom">
+                <Button.Content>
+                    <Path Data="M0,20L53.333,20 53.333,8.888 0,8.888z"
+                          Stretch="Uniform" Fill="{StaticResource RedBrush}" Width="12" Margin="0,0,0,5" />
+                </Button.Content>
+            </Button>
+        </DockPanel>
 
         <Grid Width="380" Height="480">
             <Grid.RowDefinitions>
@@ -190,17 +285,22 @@
         </TextBlock>
 
         <TextBox x:Name="ConsoleTextBox"
+                 BorderThickness="0"
+                 Background="#aa000000"
+                 Foreground="#aaa"
                  Grid.Row="1"
                  FontFamily="Consolas"
                  HorizontalScrollBarVisibility="Auto"
                  IsReadOnly="True"
-                 Padding="4,2,0,0"
+                 Padding="4,4,0,0"
                  VerticalScrollBarVisibility="Visible">
             <TextBox.ContextMenu>
                 <ContextMenu>
                     <MenuItem Click="ClearConsole_Click" Header="Vyčistit" />
                 </ContextMenu>
             </TextBox.ContextMenu>
+            Karel
+            Ctibor
         </TextBox>
     </Grid>
 </Window>

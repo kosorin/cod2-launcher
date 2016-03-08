@@ -10,17 +10,16 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Interop;
 using TrayIcon = System.Windows.Forms.NotifyIcon;
 
 namespace CoD2_Launcher
 {
-    /// <summary>
-    /// Interaction logic for MainWindow.xaml
-    /// </summary>
     public partial class MainWindow : Window, INotifyPropertyChanged
     {
         #region INotifyPropertyChanged
@@ -311,26 +310,68 @@ namespace CoD2_Launcher
         }
 
 
-        private void TrayIcon_BalloonClick(object sender, EventArgs e)
+        #region Blur Effect
+
+        [DllImport("user32.dll")]
+        private static extern int SetWindowCompositionAttribute(IntPtr hwnd, ref WindowCompositionAttributeData data);
+
+        [StructLayout(LayoutKind.Sequential)]
+        private struct WindowCompositionAttributeData
         {
-            Show();
-            WindowState = WindowState.Normal;
-        }
-        private void TrayIcon_DoubleClick(object sender, EventArgs e)
-        {
-            Show();
-            WindowState = WindowState.Normal;
+            public WindowCompositionAttribute Attribute;
+            public IntPtr Data;
+            public int SizeOfData;
         }
 
-        private void TrayIcon_Play(object sender, EventArgs e)
+        private enum WindowCompositionAttribute
         {
-            Play();
+            // ...
+            WCA_ACCENT_POLICY = 19
+            // ...
         }
 
-        private void TrayIcon_Exit(object sender, EventArgs e)
+        private enum AccentState
         {
-            Close();
+            ACCENT_DISABLED = 0,
+            ACCENT_ENABLE_GRADIENT = 1,
+            ACCENT_ENABLE_TRANSPARENTGRADIENT = 2,
+            ACCENT_ENABLE_BLURBEHIND = 3,
+            ACCENT_INVALID_STATE = 4
         }
+
+        [StructLayout(LayoutKind.Sequential)]
+        private struct AccentPolicy
+        {
+            public AccentState AccentState;
+            public int AccentFlags;
+            public int GradientColor;
+            public int AnimationId;
+        }
+
+        private void EnableBlur()
+        {
+            var windowHelper = new WindowInteropHelper(this);
+
+            var accent = new AccentPolicy();
+            var accentStructSize = Marshal.SizeOf(accent);
+            accent.AccentState = AccentState.ACCENT_ENABLE_BLURBEHIND;
+
+            var accentPtr = Marshal.AllocHGlobal(accentStructSize);
+            Marshal.StructureToPtr(accent, accentPtr, false);
+
+            var data = new WindowCompositionAttributeData();
+            data.Attribute = WindowCompositionAttribute.WCA_ACCENT_POLICY;
+            data.SizeOfData = accentStructSize;
+            data.Data = accentPtr;
+
+            SetWindowCompositionAttribute(windowHelper.Handle, ref data);
+
+            Marshal.FreeHGlobal(accentPtr);
+        }
+
+        #endregion
+
+        #region Event Handlers
 
         protected override void OnClosed(EventArgs e)
         {
@@ -348,6 +389,38 @@ namespace CoD2_Launcher
                 Hide();
             }
             base.OnStateChanged(e);
+        }
+
+        private void Close_Click(object sender, RoutedEventArgs e)
+        {
+            Close();
+        }
+
+        private void Minimize_Click(object sender, RoutedEventArgs e)
+        {
+            WindowState = WindowState.Minimized;
+        }
+
+        private void TrayIcon_BalloonClick(object sender, EventArgs e)
+        {
+            Show();
+            WindowState = WindowState.Normal;
+        }
+
+        private void TrayIcon_DoubleClick(object sender, EventArgs e)
+        {
+            Show();
+            WindowState = WindowState.Normal;
+        }
+
+        private void TrayIcon_Play(object sender, EventArgs e)
+        {
+            Play();
+        }
+
+        private void TrayIcon_Exit(object sender, EventArgs e)
+        {
+            Close();
         }
 
         private void Play_Click(object sender, RoutedEventArgs e)
@@ -426,6 +499,19 @@ namespace CoD2_Launcher
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             _loaded = true;
+            EnableBlur();
         }
+
+        private void Window_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            if (e.ChangedButton == MouseButton.Left)
+            {
+                DragMove();
+            }
+        }
+
+        #endregion
+
+
     }
 }
