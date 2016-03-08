@@ -194,32 +194,45 @@ namespace CoD2_Launcher
 
         private void RemoveServer(string server)
         {
+            bool isRemoved = false;
             if (Properties.Settings.Default.ServerList.Contains(server))
             {
                 Properties.Settings.Default.ServerList.Remove(server);
                 Properties.Settings.Default.Save();
+                isRemoved = true;
+            }
+
+            if (Properties.Settings.Default.DefaultServer == server)
+            {
+                DefaultServer(Properties.Settings.Default.ServerList.Cast<string>().FirstOrDefault());
             }
 
             if (ServerList.Contains(server))
             {
                 ServerList.Remove(server);
+                isRemoved = true;
             }
 
-            Logger.Log($"Odebrán oblíbený server: {server}");
+            if (isRemoved)
+            {
+                Logger.Log($"Odebrán oblíbený server: {server}");
+            }
         }
 
         private void DefaultServer(string server)
         {
-            AddServer(server);
-
-            if (!Properties.Settings.Default.ServerList.Contains(server))
+            if (server != null)
             {
-                Properties.Settings.Default.ServerList.Add(server);
+                AddServer(server);
+                Properties.Settings.Default.DefaultServer = server;
+                Logger.Log($"Nastaven výchozí server: {server}");
             }
-            Properties.Settings.Default.DefaultServer = server;
+            else
+            {
+                Properties.Settings.Default.DefaultServer = "";
+                Logger.Log($"Vymazán výchozí server: {server}");
+            }
             Properties.Settings.Default.Save();
-
-            Logger.Log($"Nastaven výchozí server: {server}");
         }
 
         private string ShowFileDialog(string path = null)
